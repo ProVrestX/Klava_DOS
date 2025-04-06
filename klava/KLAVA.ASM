@@ -7,7 +7,8 @@ VIDEOSEG equ 0b800h
 
 .data
 FrameWall db '+-+| |+-+'
-TextStr db 'AX: ____BX: ____CX: ____DX: ____'
+TextStr db 'AX: BX: CX: DX: '
+RegsStr db 16 dup(0)
 
 .code
 Start:
@@ -68,6 +69,9 @@ New09		proc
 		mov al, 20h
 		out 20h, al
 		
+		call DrawFrame
+		call DrawText
+
 		pop es bx ax
 		db 0eah
 Old09Ofs	dw 0
@@ -81,24 +85,19 @@ Old09Seg	dw 0
 NewTim		proc
 		push ax bx cx dx si di es
 		
-		mov di, offset TextStr
+		mov di, offset RegsStr
 
-		add di, 4
 		call WordToHex
 
-		add di, 4
 		mov ax, bx
 		call WordToHex
 
-		add di, 4
 		mov ax, cx
 		call WordToHex
 
-		add di, 4
 		mov ax, dx
 		call WordToHex
 
-		call DrawFrame
 		call DrawRegs
 		
 		pop es di si dx cx bx ax
@@ -203,25 +202,56 @@ DrawLine	proc
 ;------------------------------------------------
 
 ;------------------------------------------------
-; Draw regs to frame
+; Draw text to frame
 ;------------------------------------------------
-DrawRegs	proc
+DrawText	proc
 
-		mov bx, 0b800h
-		mov es, bx	
+		push VIDEOSEG	
+		pop es
+		mov di, 0
 		mov ah, 05ah
 
 		mov cx, 4	
 		mov si, offset TextStr
 
-LoopRegs: 
+LoopText: 
 		mov dx, cx
 		imul dx, 160
 		mov di, 160*6 + 2*2
 		sub di, dx
 		push cx
-		mov cx, 8
-		call DrawText 
+		mov cx, 4
+		call InsText 
+
+		pop cx
+		loop LoopText
+
+
+		ret
+		endp
+;------------------------------------------------
+
+;------------------------------------------------
+; Draw regs to frame
+;------------------------------------------------
+DrawRegs	proc
+
+		push VIDEOSEG	
+		pop es
+		mov di, 0
+		mov ah, 05ah
+
+		mov cx, 4	
+		mov si, offset RegsStr
+
+LoopRegs: 
+		mov dx, cx
+		imul dx, 160
+		mov di, 160*6 + 6*2
+		sub di, dx
+		push cx
+		mov cx, 4
+		call InsText 
 
 		pop cx
 		loop LoopRegs
@@ -234,16 +264,17 @@ LoopRegs:
 ;------------------------------------------------
 ; Draw text to frame
 ; Entry: CX - length str
-;	 SI - adr str
+;	 SI - addr str
 ;	 ES:DI - addr video mem
+;	 AH - color attr
 ;------------------------------------------------
-DrawText	proc
+InsText	proc
 
-LoopText:
+LoopInsText:
 		lodsb
 		stosw
 
-		loop LoopText
+		loop LoopInsText
 
 		ret
 		endp

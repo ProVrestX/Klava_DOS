@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 1
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 1
 klava.asm
 
 
@@ -13,277 +13,311 @@ klava.asm
       8	0100			     .data
       9	0000  2B 2D 2B 7C 20 7C	2B+  FrameWall db '+-+|	|+-+'
      10	      2D 2B
-     11	0009  41 58 3A 20 5F 5F	5F+  TextStr db	'AX: ____BX: ____CX: ____DX: ____'
-     12	      5F 42 58 3A 20 5F	5F+
-     13	      5F 5F 43 58 3A 20	5F+
-     14	      5F 5F 5F 44 58 3A	20+
-     15	      5F 5F 5F 5F
-     16
-     17	0029			     .code
-     18	0100			     Start:
-     19	0100  33 C0				     xor ax, ax
-     20	0102  8E C0				     mov es, ax
-     21	0104  BB 0024				     mov bx, 09h * 4
-     22
-     23	0107  26: 8B 07				     mov ax, es:[bx]
-     24	010A  A3 016Fr				     mov Old09Ofs, ax
-     25	010D  26: 8B 47	02			     mov ax, es:[bx+2]
-     26	0111  A3 0171r				     mov Old09Seg, ax
-     27
-     28	0114  FA				     cli
-     29	0115  26: C7 07	014Ar			     mov es:[bx], offset New09
-     30	011A  0E				     push cs
-     31	011B  58				     pop ax
-     32	011C  26: 89 47	02			     mov es:[bx+2], ax
-     33	0120  FB				     sti
-     34
-     35	0121  BB 0020				     mov bx, 08h * 4
-     36	0124  26: 8B 07				     mov ax, es:[bx]
-     37	0127  A3 01AAr				     mov Old08Ofs, ax
-     38	012A  26: 8B 47	02			     mov ax, es:[bx+2]
-     39	012E  A3 01ACr				     mov Old08Seg, ax
-     40
-     41	0131  FA				     cli
-     42	0132  26: C7 07	0174r			     mov es:[bx], offset NewTim
-     43	0137  0E				     push cs
-     44	0138  58				     pop ax
-     45	0139  26: 89 47	02			     mov es:[bx+2], ax
-     46	013D  FB				     sti
-     47
-     48	013E  B8 3100				     mov ax, 3100h
-     49	0141  BA 0241r				     mov dx, offset EOP
-     50	0144  C1 EA 04				     shr dx, 4
-     51	0147  42				     inc dx
-     52	0148  CD 21				     int 21h
-     53
-     54				     ;------------------------------------------------
-     55	014A			     New09	     proc
-     56	014A  50 53 06				     push ax bx	es
-     57
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 2
+     11	0009  41 58 3A 20 42 58	3A+  TextStr db	'AX: BX: CX: DX: '
+     12	      20 43 58 3A 20 44	58+
+     13	      3A 20
+     14	0019  10*(00)		     RegsStr db	16 dup(0)
+     15
+     16	0029			     .code
+     17	0100			     Start:
+     18	0100  33 C0				     xor ax, ax
+     19	0102  8E C0				     mov es, ax
+     20	0104  BB 0024				     mov bx, 09h * 4
+     21
+     22	0107  26: 8B 07				     mov ax, es:[bx]
+     23	010A  A3 0175r				     mov Old09Ofs, ax
+     24	010D  26: 8B 47	02			     mov ax, es:[bx+2]
+     25	0111  A3 0177r				     mov Old09Seg, ax
+     26
+     27	0114  FA				     cli
+     28	0115  26: C7 07	014Ar			     mov es:[bx], offset New09
+     29	011A  0E				     push cs
+     30	011B  58				     pop ax
+     31	011C  26: 89 47	02			     mov es:[bx+2], ax
+     32	0120  FB				     sti
+     33
+     34	0121  BB 0020				     mov bx, 08h * 4
+     35	0124  26: 8B 07				     mov ax, es:[bx]
+     36	0127  A3 01A1r				     mov Old08Ofs, ax
+     37	012A  26: 8B 47	02			     mov ax, es:[bx+2]
+     38	012E  A3 01A3r				     mov Old08Seg, ax
+     39
+     40	0131  FA				     cli
+     41	0132  26: C7 07	017Ar			     mov es:[bx], offset NewTim
+     42	0137  0E				     push cs
+     43	0138  58				     pop ax
+     44	0139  26: 89 47	02			     mov es:[bx+2], ax
+     45	013D  FB				     sti
+     46
+     47	013E  B8 3100				     mov ax, 3100h
+     48	0141  BA 025Fr				     mov dx, offset EOP
+     49	0144  C1 EA 04				     shr dx, 4
+     50	0147  42				     inc dx
+     51	0148  CD 21				     int 21h
+     52
+     53				     ;------------------------------------------------
+     54	014A			     New09	     proc
+     55	014A  50 53 06				     push ax bx	es
+     56
+     57	014D  68 B800				     push VIDEOSEG
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 2
 klava.asm
 
 
 
-     58	014D  68 B800				     push VIDEOSEG
-     59	0150  07				     pop es
-     60	0151  B4 4E				     mov ah, 4eh
-     61	0153  BB 00F0				     mov bx, 1*80*2 + 40*2
-     62
-     63	0156  E4 60				     in	al, 60h
-     64	0158  26: 89 07				     mov es:[bx], ax
-     65
-     66	015B  E4 61				     in	al, 61h
-     67	015D  8A E0				     mov ah, al
-     68	015F  0C 80				     or	al, 80h
-     69	0161  E6 61				     out 61h, al
-     70	0163  8A C4				     mov al, ah
-     71	0165  E6 61				     out 61h, al
-     72
-     73	0167  B0 20				     mov al, 20h
-     74	0169  E6 20				     out 20h, al
-     75
-     76	016B  07 5B 58				     pop es bx ax
-     77	016E  EA				     db	0eah
-     78	016F  0000		     Old09Ofs	     dw	0
-     79	0171  0000		     Old09Seg	     dw	0
-     80
-     81	0173  CF				     iret
-     82	0174					     endp
-     83				     ;------------------------------------------------
-     84
+     58	0150  07				     pop es
+     59	0151  B4 4E				     mov ah, 4eh
+     60	0153  BB 00F0				     mov bx, 1*80*2 + 40*2
+     61
+     62	0156  E4 60				     in	al, 60h
+     63	0158  26: 89 07				     mov es:[bx], ax
+     64
+     65	015B  E4 61				     in	al, 61h
+     66	015D  8A E0				     mov ah, al
+     67	015F  0C 80				     or	al, 80h
+     68	0161  E6 61				     out 61h, al
+     69	0163  8A C4				     mov al, ah
+     70	0165  E6 61				     out 61h, al
+     71
+     72	0167  B0 20				     mov al, 20h
+     73	0169  E6 20				     out 20h, al
+     74
+     75	016B  E8 0056				     call DrawFrame
+     76	016E  E8 009F				     call DrawText
+     77
+     78	0171  07 5B 58				     pop es bx ax
+     79	0174  EA				     db	0eah
+     80	0175  0000		     Old09Ofs	     dw	0
+     81	0177  0000		     Old09Seg	     dw	0
+     82
+     83	0179  CF				     iret
+     84	017A					     endp
      85				     ;------------------------------------------------
-     86	0174			     NewTim	     proc
-     87	0174  50 53 51 52 56 57	06		     push ax bx	cx dx si di es
-     88
-     89	017B  BF 0009r				     mov di, offset TextStr
+     86
+     87				     ;------------------------------------------------
+     88	017A			     NewTim	     proc
+     89	017A  50 53 51 52 56 57	06		     push ax bx	cx dx si di es
      90
-     91	017E  83 C7 04				     add di, 4
-     92	0181  E8 002B				     call WordToHex
-     93
-     94	0184  83 C7 04				     add di, 4
+     91	0181  BF 0019r				     mov di, offset RegsStr
+     92
+     93	0184  E8 001F				     call WordToHex
+     94
      95	0187  8B C3				     mov ax, bx
-     96	0189  E8 0023				     call WordToHex
+     96	0189  E8 001A				     call WordToHex
      97
-     98	018C  83 C7 04				     add di, 4
-     99	018F  8B C1				     mov ax, cx
-    100	0191  E8 001B				     call WordToHex
-    101
-    102	0194  83 C7 04				     add di, 4
-    103	0197  8B C2				     mov ax, dx
-    104	0199  E8 0013				     call WordToHex
+     98	018C  8B C1				     mov ax, cx
+     99	018E  E8 0015				     call WordToHex
+    100
+    101	0191  8B C2				     mov ax, dx
+    102	0193  E8 0010				     call WordToHex
+    103
+    104	0196  E8 009C				     call DrawRegs
     105
-    106	019C  E8 002E				     call DrawFrame
-    107	019F  E8 0077				     call DrawRegs
-    108
-    109	01A2  07 5F 5E 5A 59 5B	58		     pop es di si dx cx	bx ax
-    110	01A9  EA				     db	0eah
-    111	01AA  0000		     Old08Ofs	     dw	0
-    112	01AC  0000		     Old08Seg	     dw	0
-    113
-    114	01AE  CF				     iret
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 3
+    106	0199  07 5F 5E 5A 59 5B	58		     pop es di si dx cx	bx ax
+    107	01A0  EA				     db	0eah
+    108	01A1  0000		     Old08Ofs	     dw	0
+    109	01A3  0000		     Old08Seg	     dw	0
+    110
+    111	01A5  CF				     iret
+    112	01A6					     endp
+    113				     ;------------------------------------------------
+    114
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 3
 klava.asm
 
 
 
-    115	01AF					     endp
-    116				     ;------------------------------------------------
-    117
-    118				     ;------------------------------------------------
-    119	01AF			     WordToHex proc
-    120	01AF  50 53 51				     push ax bx	cx
+    115				     ;------------------------------------------------
+    116	01A6			     WordToHex proc
+    117	01A6  50 53 51				     push ax bx	cx
+    118
+    119	01A9  B9 0004				     mov cx, 4
+    120	01AC  8B D8				     mov bx, ax
     121
-    122	01B2  B9 0004				     mov cx, 4
-    123	01B5  8B D8				     mov bx, ax
-    124
-    125	01B7			     ConvertLoop:
-    126	01B7  C1 C3 04				     rol bx, 4
-    127	01BA  8A C3				     mov al, bl
-    128	01BC  24 0F				     and al, 0Fh
-    129	01BE  04 30				     add al, '0'
-    130	01C0  3C 39				     cmp al, '9'
-    131	01C2  7E 02				     jle NumIsDec
-    132	01C4  04 07				     add al, 'A' - '9' - 1
-    133
-    134	01C6			     NumIsDec:
-    135	01C6  AA				     stosb
-    136	01C7  E2 EE				     loop ConvertLoop
-    137
-    138	01C9  59 5B 58				     pop cx bx ax
-    139
-    140	01CC  C3				     ret
-    141	01CD					     endp
-    142				     ;------------------------------------------------
-    143
-    144				     ;------------------------------------------------
-    145				     ; Draw a frame
-    146				     ;------------------------------------------------
-    147	01CD			     DrawFrame	     proc
-    148
-    149	01CD  68 B800				     push VIDEOSEG
-    150	01D0  07				     pop es
-    151	01D1  BF 0000				     mov di, 0
-    152	01D4  B4 5A				     mov ah, 05ah
-    153
-    154	01D6  BE 0000r				     mov si, offset FrameWall
-    155	01D9  B9 000C				     mov cx, 12
-    156	01DC  E8 002E				     call DrawLine
+    122	01AE			     ConvertLoop:
+    123	01AE  C1 C3 04				     rol bx, 4
+    124	01B1  8A C3				     mov al, bl
+    125	01B3  24 0F				     and al, 0Fh
+    126	01B5  04 30				     add al, '0'
+    127	01B7  3C 39				     cmp al, '9'
+    128	01B9  7E 02				     jle NumIsDec
+    129	01BB  04 07				     add al, 'A' - '9' - 1
+    130
+    131	01BD			     NumIsDec:
+    132	01BD  AA				     stosb
+    133	01BE  E2 EE				     loop ConvertLoop
+    134
+    135	01C0  59 5B 58				     pop cx bx ax
+    136
+    137	01C3  C3				     ret
+    138	01C4					     endp
+    139				     ;------------------------------------------------
+    140
+    141				     ;------------------------------------------------
+    142				     ; Draw a frame
+    143				     ;------------------------------------------------
+    144	01C4			     DrawFrame	     proc
+    145
+    146	01C4  68 B800				     push VIDEOSEG
+    147	01C7  07				     pop es
+    148	01C8  BF 0000				     mov di, 0
+    149	01CB  B4 5A				     mov ah, 05ah
+    150
+    151	01CD  BE 0000r				     mov si, offset FrameWall
+    152	01D0  B9 000C				     mov cx, 12
+    153	01D3  E8 002E				     call DrawLine
+    154
+    155	01D6  B9 0006				     mov cx, 6
+    156	01D9  BF 00A0				     mov di, 160
     157
-    158	01DF  B9 0006				     mov cx, 6
-    159	01E2  BF 00A0				     mov di, 160
+    158	01DC			     DrawFrameLoop:
+    159	01DC  51				     push cx
     160
-    161	01E5			     DrawFrameLoop:
-    162	01E5  51				     push cx
-    163
-    164	01E6  BE 0000r				     mov si, offset FrameWall
-    165	01E9  83 C6 03				     add si, 3
-    166	01EC  B9 000C				     mov cx, 12
-    167	01EF  E8 001B				     call DrawLine
-    168
-    169	01F2  59				     pop cx
-    170	01F3  BA 0008				     mov dx, 1 + 6 + 1
-    171	01F6  2B D1				     sub dx, cx
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 4
+    161	01DD  BE 0000r				     mov si, offset FrameWall
+    162	01E0  83 C6 03				     add si, 3
+    163	01E3  B9 000C				     mov cx, 12
+    164	01E6  E8 001B				     call DrawLine
+    165
+    166	01E9  59				     pop cx
+    167	01EA  BA 0008				     mov dx, 1 + 6 + 1
+    168	01ED  2B D1				     sub dx, cx
+    169	01EF  69 D2 00A0			     imul dx, 160
+    170	01F3  8B FA				     mov di, dx
+    171	01F5  E2 E5				     loop DrawFrameLoop
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 4
 klava.asm
 
 
 
-    172	01F8  69 D2 00A0			     imul dx, 160
-    173	01FC  8B FA				     mov di, dx
-    174	01FE  E2 E5				     loop DrawFrameLoop
-    175
-    176	0200  BE 0000r				     mov si, offset FrameWall
-    177	0203  83 C6 06				     add si, 6
-    178	0206  B9 000C				     mov cx, 12
-    179	0209  E8 0001				     call DrawLine
-    180
-    181	020C  C3				     ret
-    182	020D					     endp
-    183				     ;------------------------------------------------
-    184
-    185				     ;------------------------------------------------
-    186				     ; Draw a line
-    187				     ; Entry: SI - 3-Bit string	for line
-    188				     ;	      CX - width line
-    189				     ;	      ES:DI - addr video mem
-    190				     ;	      AH - color attr
-    191				     ;------------------------------------------------
-    192	020D			     DrawLine	     proc
-    193
-    194	020D  FC				     cld
+    172
+    173	01F7  BE 0000r				     mov si, offset FrameWall
+    174	01FA  83 C6 06				     add si, 6
+    175	01FD  B9 000C				     mov cx, 12
+    176	0200  E8 0001				     call DrawLine
+    177
+    178	0203  C3				     ret
+    179	0204					     endp
+    180				     ;------------------------------------------------
+    181
+    182				     ;------------------------------------------------
+    183				     ; Draw a line
+    184				     ; Entry: SI - 3-Bit string	for line
+    185				     ;	      CX - width line
+    186				     ;	      ES:DI - addr video mem
+    187				     ;	      AH - color attr
+    188				     ;------------------------------------------------
+    189	0204			     DrawLine	     proc
+    190
+    191	0204  FC				     cld
+    192
+    193	0205  AC				     lodsb
+    194	0206  AB				     stosw
     195
-    196	020E  AC				     lodsb
-    197	020F  AB				     stosw
-    198
-    199	0210  AC				     lodsb
-    200	0211  83 E9 02				     sub cx, 2
-    201	0214  F3> AB				     rep stosw
+    196	0207  AC				     lodsb
+    197	0208  83 E9 02				     sub cx, 2
+    198	020B  F3> AB				     rep stosw
+    199
+    200	020D  AC				     lodsb
+    201	020E  AB				     stosw
     202
-    203	0216  AC				     lodsb
-    204	0217  AB				     stosw
-    205
-    206	0218  C3				     ret
-    207	0219					     endp
-    208				     ;------------------------------------------------
-    209
-    210				     ;------------------------------------------------
-    211				     ; Draw regs to frame
-    212				     ;------------------------------------------------
-    213	0219			     DrawRegs	     proc
-    214
-    215	0219  BB B800				     mov bx, 0b800h
-    216	021C  8E C3				     mov es, bx
-    217	021E  B4 5A				     mov ah, 05ah
-    218
-    219	0220  B9 0004				     mov cx, 4
-    220	0223  BE 0009r				     mov si, offset TextStr
-    221
-    222	0226			     LoopRegs:
-    223	0226  8B D1				     mov dx, cx
-    224	0228  69 D2 00A0			     imul dx, 160
-    225	022C  BF 03C4				     mov di, 160*6 + 2*2
-    226	022F  2B FA				     sub di, dx
-    227	0231  51				     push cx
-    228	0232  B9 0008				     mov cx, 8
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 5
+    203	020F  C3				     ret
+    204	0210					     endp
+    205				     ;------------------------------------------------
+    206
+    207				     ;------------------------------------------------
+    208				     ; Draw text to frame
+    209				     ;------------------------------------------------
+    210	0210			     DrawText	     proc
+    211
+    212	0210  68 B800				     push VIDEOSEG
+    213	0213  07				     pop es
+    214	0214  BF 0000				     mov di, 0
+    215	0217  B4 5A				     mov ah, 05ah
+    216
+    217	0219  B9 0004				     mov cx, 4
+    218	021C  BE 0009r				     mov si, offset TextStr
+    219
+    220	021F			     LoopText:
+    221	021F  8B D1				     mov dx, cx
+    222	0221  69 D2 00A0			     imul dx, 160
+    223	0225  BF 03C4				     mov di, 160*6 + 2*2
+    224	0228  2B FA				     sub di, dx
+    225	022A  51				     push cx
+    226	022B  B9 0004				     mov cx, 4
+    227	022E  E8 0029				     call InsText
+    228
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 5
 klava.asm
 
 
 
-    229	0235  E8 0004				     call DrawText
-    230
-    231	0238  59				     pop cx
-    232	0239  E2 EB				     loop LoopRegs
-    233
-    234
-    235	023B  C3				     ret
-    236	023C					     endp
+    229	0231  59				     pop cx
+    230	0232  E2 EB				     loop LoopText
+    231
+    232
+    233	0234  C3				     ret
+    234	0235					     endp
+    235				     ;------------------------------------------------
+    236
     237				     ;------------------------------------------------
-    238
+    238				     ; Draw regs to frame
     239				     ;------------------------------------------------
-    240				     ; Draw text to frame
-    241				     ; Entry: CX - length str
-    242				     ;	      SI - adr str
-    243				     ;	      ES:DI - addr video mem
-    244				     ;------------------------------------------------
-    245	023C			     DrawText	     proc
+    240	0235			     DrawRegs	     proc
+    241
+    242	0235  68 B800				     push VIDEOSEG
+    243	0238  07				     pop es
+    244	0239  BF 0000				     mov di, 0
+    245	023C  B4 5A				     mov ah, 05ah
     246
-    247	023C			     LoopText:
-    248	023C  AC				     lodsb
-    249	023D  AB				     stosw
-    250
-    251	023E  E2 FC				     loop LoopText
-    252
-    253	0240  C3				     ret
-    254	0241					     endp
-    255				     ;------------------------------------------------
-    256
-    257
+    247	023E  B9 0004				     mov cx, 4
+    248	0241  BE 0019r				     mov si, offset RegsStr
+    249
+    250	0244			     LoopRegs:
+    251	0244  8B D1				     mov dx, cx
+    252	0246  69 D2 00A0			     imul dx, 160
+    253	024A  BF 03CC				     mov di, 160*6 + 6*2
+    254	024D  2B FA				     sub di, dx
+    255	024F  51				     push cx
+    256	0250  B9 0004				     mov cx, 4
+    257	0253  E8 0004				     call InsText
     258
-    259	0241			     EOP:
-    260				     end	     Start
-Turbo Assembler	 Version 4.1	    04/05/25 23:35:51	    Page 6
+    259	0256  59				     pop cx
+    260	0257  E2 EB				     loop LoopRegs
+    261
+    262
+    263	0259  C3				     ret
+    264	025A					     endp
+    265				     ;------------------------------------------------
+    266
+    267				     ;------------------------------------------------
+    268				     ; Draw text to frame
+    269				     ; Entry: CX - length str
+    270				     ;	      SI - addr	str
+    271				     ;	      ES:DI - addr video mem
+    272				     ;	      AH - color attr
+    273				     ;------------------------------------------------
+    274	025A			     InsText proc
+    275
+    276	025A			     LoopInsText:
+    277	025A  AC				     lodsb
+    278	025B  AB				     stosw
+    279
+    280	025C  E2 FC				     loop LoopInsText
+    281
+    282	025E  C3				     ret
+    283	025F					     endp
+    284				     ;------------------------------------------------
+    285
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 6
+klava.asm
+
+
+
+    286
+    287
+    288	025F			     EOP:
+    289				     end	     Start
+Turbo Assembler	 Version 4.1	    04/06/25 12:57:34	    Page 7
 Symbol Table
 
 
@@ -291,9 +325,9 @@ Symbol Table
 
 Symbol Name			  Type	 Value
 
-??DATE				  Text	 "04/05/25"
+??DATE				  Text	 "04/06/25"
 ??FILENAME			  Text	 "klava	  "
-??TIME				  Text	 "23:35:51"
+??TIME				  Text	 "12:57:34"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -307,31 +341,34 @@ Symbol Name			  Type	 Value
 @MODEL				  Text	 1
 @STACK				  Text	 DGROUP
 @WORDSIZE			  Text	 2
-CONVERTLOOP			  Near	 DGROUP:01B7
-DRAWFRAME			  Near	 DGROUP:01CD
-DRAWFRAMELOOP			  Near	 DGROUP:01E5
-DRAWLINE			  Near	 DGROUP:020D
-DRAWREGS			  Near	 DGROUP:0219
-DRAWTEXT			  Near	 DGROUP:023C
-EOP				  Near	 DGROUP:0241
+CONVERTLOOP			  Near	 DGROUP:01AE
+DRAWFRAME			  Near	 DGROUP:01C4
+DRAWFRAMELOOP			  Near	 DGROUP:01DC
+DRAWLINE			  Near	 DGROUP:0204
+DRAWREGS			  Near	 DGROUP:0235
+DRAWTEXT			  Near	 DGROUP:0210
+EOP				  Near	 DGROUP:025F
 FRAMEWALL			  Byte	 DGROUP:0000
-LOOPREGS			  Near	 DGROUP:0226
-LOOPTEXT			  Near	 DGROUP:023C
+INSTEXT				  Near	 DGROUP:025A
+LOOPINSTEXT			  Near	 DGROUP:025A
+LOOPREGS			  Near	 DGROUP:0244
+LOOPTEXT			  Near	 DGROUP:021F
 NEW09				  Near	 DGROUP:014A
-NEWTIM				  Near	 DGROUP:0174
-NUMISDEC			  Near	 DGROUP:01C6
-OLD08OFS			  Word	 DGROUP:01AA
-OLD08SEG			  Word	 DGROUP:01AC
-OLD09OFS			  Word	 DGROUP:016F
-OLD09SEG			  Word	 DGROUP:0171
+NEWTIM				  Near	 DGROUP:017A
+NUMISDEC			  Near	 DGROUP:01BD
+OLD08OFS			  Word	 DGROUP:01A1
+OLD08SEG			  Word	 DGROUP:01A3
+OLD09OFS			  Word	 DGROUP:0175
+OLD09SEG			  Word	 DGROUP:0177
+REGSSTR				  Byte	 DGROUP:0019
 START				  Near	 DGROUP:0100
 TEXTSTR				  Byte	 DGROUP:0009
 VIDEOSEG			  Number B800
-WORDTOHEX			  Near	 DGROUP:01AF
+WORDTOHEX			  Near	 DGROUP:01A6
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
   _DATA				  16  0029 Word	  Public  DATA
-  _TEXT				  16  0241 Word	  Public  CODE
+  _TEXT				  16  025F Word	  Public  CODE
 
