@@ -69,6 +69,8 @@ New09		proc
 		mov al, 20h
 		out 20h, al
 		
+		call FillFrameWall
+		call FillTextStr
 		call DrawFrame
 		call DrawText
 
@@ -106,6 +108,40 @@ Old08Ofs	dw 0
 Old08Seg	dw 0
 
 		iret
+		endp
+;------------------------------------------------
+
+;------------------------------------------------
+FillFrameWall proc
+		mov di, offset FrameWall ;'+-+| |+-+'
+
+		mov word ptr [di], '-+'
+		mov word ptr [di+2], '|+'
+		mov word ptr [di+4], '| '
+		mov word ptr [di+6], '-+'
+		mov byte ptr [di+8], '+'
+
+		ret 
+		endp
+;------------------------------------------------
+
+;------------------------------------------------
+FillTextStr proc
+		mov di, offset TextStr ;'AX: BX: CX: DX: '
+
+		mov word ptr [di], 'XA'
+		mov word ptr [di+2], ' :'
+		add di, 4
+		mov word ptr [di], 'XB'
+		mov word ptr [di+2], ' :'
+		add di, 4
+		mov word ptr [di], 'XC'
+		mov word ptr [di+2], ' :'
+		add di, 4
+		mov word ptr [di], 'XD'
+		mov word ptr [di+2], ' :'
+
+		ret 
 		endp
 ;------------------------------------------------
 
